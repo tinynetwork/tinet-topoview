@@ -1,4 +1,4 @@
-# tinet-topoview
+# tinet-topoview [![Netlify Status](https://api.netlify.com/api/v1/badges/a35371b9-b9c8-4b6f-805f-cd7bb9ac619c/deploy-status)](https://app.netlify.com/sites/tinet-topoview/deploys)
 
 Visualize using [cytoscape.js](https://js.cytoscape.org/) from [tinet](https://github.com/slankdev/tinet) and [tinet-go](https://github.com/ak1ra24/tinet-go) configuration file.
 

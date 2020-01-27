@@ -63,12 +63,13 @@ export default {
         { text: "cose" },
         { text: "cola" }
       ],
-
       selectedLayout: "cola",
       input: "",
       output: "",
       msg: "vue to cytoscape",
       count: 0,
+      nodeConfig: [],
+      nodeConfigDict: {},
       textdata: `
 nodes:
   - name: dc-R0
@@ -176,6 +177,9 @@ test:
 
         let edgeMap = {};
         let nodeGroups = [];
+        this.extract_nodeConfig(tnconfig.node_configs);
+        console.log("config:");
+        console.log(this.nodeConfigDict);
         for (let i = 0; i < tnconfig.nodes.length; i++) {
           let nodeNameArg = tnconfig.nodes[i].name.split("-");
           let nodeName = "";
@@ -256,6 +260,32 @@ test:
         alert("Failed!!\nPlease check the textarea!");
       }
     },
+    extract_nodeConfig: function(nodeConfigs) {
+      for (let i = 0; i < nodeConfigs.length; i++) {
+        this.nodeConfigDict[nodeConfigs[i].name] = nodeConfigs[i].cmds;
+      }
+    },
+    clickEvent: function(cy) {
+      const self = this;
+      cy.on("tap", function(event) {
+        console.log("this.cy.event");
+        let tgt = event.target;
+        if (tgt != cy) {
+          let targetGroup = tgt.group();
+          if (targetGroup == "nodes") {
+            let tapNode = tgt.json().data;
+            let tapNodeName = tapNode["name"];
+            console.log(self.nodeConfigDict);
+            const tapNodeConfig = self.nodeConfigDict[tapNodeName];
+            alert(JSON.stringify(tapNodeConfig, null, "\t"));
+          }
+          // else if (targetGroup == "edges") {
+          //   let tapEdge = tgt.json().data;
+          //   alert(tapEdge);
+          // }
+        }
+      });
+    },
     view_draw: function(elements) {
       this.cy = cytoscape({
         container: document.getElementById("cy"),
@@ -330,12 +360,11 @@ test:
       });
 
       this.cy.panzoom({});
+      this.clickEvent(this.cy);
     },
     changeLayout: function() {
       let layout = {
         name: this.selectedLayout,
-        // fit: true,
-        // animate: true
         directed: true,
         padding: 10
       };
