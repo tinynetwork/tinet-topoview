@@ -1,47 +1,52 @@
 <template>
   <div id="view">
     <v-container fluid>
+      <div id="optb">
+        <v-col class="d-flex ma-2">
+          <v-select
+            :items="dropdown_layout"
+            label="Layout Style"
+            outlined
+            value="grid"
+            v-model="selectedLayout"
+            v-on:change="changeLayout"
+          ></v-select>
+        </v-col>
+        <v-btn
+          class="ma-2"
+          tile
+          outlined
+          color="success"
+          v-on:click="textarea_cytoscape_view"
+        >
+          <v-icon left>mdi-pencil</v-icon>Draw
+        </v-btn>
+        <v-btn
+          class="ma-2"
+          tile
+          outlined
+          color="red"
+          v-on:click="textarea_cytoscape_view"
+        >
+          <v-icon left>fas fa-redo</v-icon>Reload
+        </v-btn>
+      </div>
       <v-row>
-        <v-textarea
-          clearable
-          clear-icon="fas fa-window-close"
-          label="Tinet Config"
-          v-model="textdata"
-          filled
-        ></v-textarea>
-        <div id="optb">
-          <v-col class="d-flex ma-2">
-            <v-select
-              :items="dropdown_layout"
-              label="Layout Style"
-              outlined
-              value="grid"
-              v-model="selectedLayout"
-              v-on:change="changeLayout"
-            ></v-select>
-          </v-col>
-          <v-btn
-            class="ma-2"
-            tile
-            outlined
-            color="success"
-            v-on:click="textarea_cytoscape_view"
-          >
-            <v-icon left>mdi-pencil</v-icon>Draw
-          </v-btn>
-          <v-btn
-            class="ma-2"
-            tile
-            outlined
-            color="red"
-            v-on:click="textarea_cytoscape_view"
-          >
-            <v-icon left>mdi-pencil</v-icon>Reload
-          </v-btn>
-        </div>
+        <v-col cols="6">
+          <v-textarea
+            clearable
+            clear-icon="fas fa-window-close"
+            label="Tinet Config"
+            v-model="textdata"
+            filled
+            auto-grow
+          ></v-textarea>
+        </v-col>
+        <v-col cols="6">
+          <div id="cy"></div>
+        </v-col>
       </v-row>
     </v-container>
-    <div id="cy"></div>
   </div>
 </template>
 
@@ -358,7 +363,7 @@ test:
   width: 100%;
   height: 100%;
   z-index: 999;
-  top: 300px;
+  /* top: 300px; */
   background-color: #e9e9e9;
 }
 
