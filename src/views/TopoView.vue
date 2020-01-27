@@ -48,9 +48,11 @@
 <script>
 const cytoscape = require('cytoscape');
 const cola = require('cytoscape-cola');
+const panzoom = require('cytoscape-panzoom');
 const yaml = require('js-yaml');
 
 cytoscape.use(cola);
+panzoom(cytoscape);
 
 export default {
   name: 'Cytoscape',
@@ -330,6 +332,8 @@ test:
         edge.css('text-margin-x', '0px');
         edge.css('text-margin-y', '0px');
       });
+
+      this.cy.panzoom({});
     },
     changeLayout: function() {
       let layout = {
