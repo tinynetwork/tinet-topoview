@@ -12,22 +12,10 @@
             v-on:change="changeLayout"
           ></v-select>
         </v-col>
-        <v-btn
-          class="ma-2"
-          tile
-          outlined
-          color="success"
-          v-on:click="textarea_cytoscape_view"
-        >
+        <v-btn class="ma-2" tile outlined color="success" v-on:click="textarea_cytoscape_view">
           <v-icon left>mdi-pencil</v-icon>Draw
         </v-btn>
-        <v-btn
-          class="ma-2"
-          tile
-          outlined
-          color="red"
-          v-on:click="textarea_cytoscape_view"
-        >
+        <v-btn class="ma-2" tile outlined color="red" v-on:click="textarea_cytoscape_view">
           <v-icon left>fas fa-redo</v-icon>Reload
         </v-btn>
       </div>
@@ -51,35 +39,35 @@
 </template>
 
 <script>
-const cytoscape = require('cytoscape');
-const cola = require('cytoscape-cola');
-const panzoom = require('cytoscape-panzoom');
-const yaml = require('js-yaml');
+const cytoscape = require("cytoscape");
+const cola = require("cytoscape-cola");
+const panzoom = require("cytoscape-panzoom");
+const yaml = require("js-yaml");
 
 cytoscape.use(cola);
 panzoom(cytoscape);
 
 export default {
-  name: 'Cytoscape',
+  name: "Cytoscape",
   components: {},
   created: function() {},
   data: function() {
     return {
       dropdown_layout: [
-        { text: 'fcose' },
-        { text: 'grid' },
-        { text: 'random' },
-        { text: 'circle' },
-        { text: 'concentric' },
-        { text: 'breadthfirst' },
-        { text: 'cose' },
-        { text: 'cola' }
+        { text: "fcose" },
+        { text: "grid" },
+        { text: "random" },
+        { text: "circle" },
+        { text: "concentric" },
+        { text: "breadthfirst" },
+        { text: "cose" },
+        { text: "cola" }
       ],
 
-      selectedLayout: 'grid',
-      input: '',
-      output: '',
-      msg: 'vue to cytoscape',
+      selectedLayout: "cola",
+      input: "",
+      output: "",
+      msg: "vue to cytoscape",
       count: 0,
       textdata: `
 nodes:
@@ -189,9 +177,9 @@ test:
         let edgeMap = {};
         let nodeGroups = [];
         for (let i = 0; i < tnconfig.nodes.length; i++) {
-          let nodeNameArg = tnconfig.nodes[i].name.split('-');
-          let nodeName = '';
-          let nodeGroup = '';
+          let nodeNameArg = tnconfig.nodes[i].name.split("-");
+          let nodeName = "";
+          let nodeGroup = "";
           if (nodeNameArg.length > 1) {
             nodeName = nodeNameArg[1];
             nodeGroup = nodeNameArg[0];
@@ -200,8 +188,8 @@ test:
             nodeName = nodeNameArg[0];
           }
 
-          let node = '';
-          if (nodeGroup != '') {
+          let node = "";
+          if (nodeGroup != "") {
             node = {
               data: { id: nodeName, name: nodeName, parent: nodeGroup }
             };
@@ -213,9 +201,9 @@ test:
           nodes.push(node);
 
           for (let j = 0; j < tnconfig.nodes[i].interfaces.length; j++) {
-            let infArgs = tnconfig.nodes[i].interfaces[j].args.split('#');
-            let infNodeArgs = infArgs[0].split('-');
-            let targetNode = '';
+            let infArgs = tnconfig.nodes[i].interfaces[j].args.split("#");
+            let infNodeArgs = infArgs[0].split("-");
+            let targetNode = "";
             if (infNodeArgs.length > 1) {
               targetNode = infNodeArgs[1];
             } else {
@@ -224,9 +212,9 @@ test:
             let sourceNode = nodeName;
             let sourceInf = tnconfig.nodes[i].interfaces[j].name;
             let targetInf = infArgs[1];
-            let infLinkInfo = sourceInf + ':' + targetInf;
-            let key = sourceNode + ':' + targetNode;
-            let reverseKey = targetNode + ':' + sourceNode;
+            let infLinkInfo = sourceInf + ":" + targetInf;
+            let key = sourceNode + ":" + targetNode;
+            let reverseKey = targetNode + ":" + sourceNode;
 
             if (!edgeMap[reverseKey]) {
               edgeMap[key] = infLinkInfo;
@@ -240,7 +228,7 @@ test:
         let setNodeGroups2Arr = Array.from(setNodeGroups);
 
         for (let k = 0; k < edgeMapKeys.length; k++) {
-          let edgeInfo = edgeMapKeys[k].split(':');
+          let edgeInfo = edgeMapKeys[k].split(":");
           let linkName = edgeMap[edgeMapKeys[k]];
           let edge = {
             data: { source: edgeInfo[0], target: edgeInfo[1], name: linkName }
@@ -265,59 +253,62 @@ test:
         this.view_draw(elements);
       } catch (e) {
         console.log(e);
-        alert('Failed!!\nPlease check the textarea!');
+        alert("Failed!!\nPlease check the textarea!");
       }
     },
     view_draw: function(elements) {
       this.cy = cytoscape({
-        container: document.getElementById('cy'),
+        container: document.getElementById("cy"),
         boxSelectionEnabled: false,
         autounselectify: true,
         elements: elements,
         layout: {
-          name: 'grid',
+          name: this.selectedLayout,
           directed: true,
-          padding: 10
+          padding: 70,
+          avoidOverlap: true,
+          animate: false,
+          fit: true
         }
       });
       this.cy.nodes().forEach(node => {
         let data = node.json().data;
         if (!data.type) {
-          node.css('width', 'label');
-          node.css('height', 'label');
-          node.css('padding', '20px');
-          node.css('content', data.name);
-          node.css('text-justification', 'left');
-          node.css('text-valign', 'center');
-          node.css('text-halign', 'center');
-          node.css('text-wrap', 'wrap');
-          node.css('shape', 'round-rectangle');
-          node.css('background-color', '#29B6F6');
+          node.css("width", "label");
+          node.css("height", "label");
+          node.css("padding", "20px");
+          node.css("content", data.name);
+          node.css("text-justification", "left");
+          node.css("text-valign", "center");
+          node.css("text-halign", "center");
+          node.css("text-wrap", "wrap");
+          node.css("shape", "round-rectangle");
+          node.css("background-color", "#29B6F6");
         } else if (data.type) {
           const colors = [
-            '#E53935',
-            '#FF5252',
-            '#8E24AA',
-            '#4A148C',
-            '#5E35B1',
-            '#3949AB',
-            '#42A5F5',
-            '#0D47A1',
-            '#039BE5',
-            '#00ACC1',
-            '#00897B',
-            '#43A047',
-            '#7CB342',
-            '#FFEE58',
-            '#FFB300',
-            '#B2EDCE',
-            '#4eb7d9',
-            '#ffdaf4'
+            "#E53935",
+            "#FF5252",
+            "#8E24AA",
+            "#4A148C",
+            "#5E35B1",
+            "#3949AB",
+            "#42A5F5",
+            "#0D47A1",
+            "#039BE5",
+            "#00ACC1",
+            "#00897B",
+            "#43A047",
+            "#7CB342",
+            "#FFEE58",
+            "#FFB300",
+            "#B2EDCE",
+            "#4eb7d9",
+            "#ffdaf4"
           ];
-          node.css('content', data.name);
-          node.css('text-valign', 'top');
+          node.css("content", data.name);
+          node.css("text-valign", "top");
           node.css(
-            'background-color',
+            "background-color",
             colors[Math.floor(Math.random() * colors.length)]
           );
         }
@@ -325,17 +316,17 @@ test:
 
       this.cy.edges().forEach(edge => {
         let data = edge.json().data;
-        edge.css('content', data.name);
-        edge.css('padding', '20px');
-        edge.css('text-valign', 'top');
-        edge.css('text-halign', 'center');
-        edge.css('width', '6');
-        edge.css('color', '#263238');
-        edge.css('curve-style', 'bezier');
-        edge.css('target-arrow-shape', 'none');
-        edge.css('text-rotation', 'autorotate');
-        edge.css('text-margin-x', '0px');
-        edge.css('text-margin-y', '0px');
+        edge.css("content", data.name);
+        edge.css("padding", "20px");
+        edge.css("text-valign", "top");
+        edge.css("text-halign", "center");
+        edge.css("width", "6");
+        edge.css("color", "#263238");
+        edge.css("curve-style", "bezier");
+        edge.css("target-arrow-shape", "none");
+        edge.css("text-rotation", "autorotate");
+        edge.css("text-margin-x", "0px");
+        edge.css("text-margin-y", "0px");
       });
 
       this.cy.panzoom({});
