@@ -277,7 +277,11 @@ test:
             let tapNodeName = tapNode["name"];
             console.log(self.nodeConfigDict);
             const tapNodeConfig = self.nodeConfigDict[tapNodeName];
-            alert(JSON.stringify(tapNodeConfig, null, "\t"));
+            alert(
+              yaml.safeDump(tapNodeConfig, {
+                indent: 4
+              })
+            );
           }
           // else if (targetGroup == "edges") {
           //   let tapEdge = tgt.json().data;
