@@ -176,7 +176,6 @@ test:
     textarea_cytoscape_view: function() {
       try {
         const tnconfig = yaml.safeLoad(this.textdata);
-        // console.log(tnconfig);
         let nodes = [];
         let edges = [];
 
@@ -259,7 +258,7 @@ test:
         this.view_draw(elements);
       } catch (e) {
         console.log(e);
-        alert('Failed!!\nPlease check textarea!');
+        alert('Failed!!\nPlease check the textarea!');
       }
     },
     view_draw: function(elements) {
@@ -319,8 +318,6 @@ test:
 
       this.cy.edges().forEach(edge => {
         let data = edge.json().data;
-        console.log('data name edge');
-        console.log(data);
         edge.css('content', data.name);
         edge.css('padding', '20px');
         edge.css('text-valign', 'top');
@@ -335,7 +332,6 @@ test:
       });
     },
     changeLayout: function() {
-      console.log(this.selectedLayout);
       let layout = {
         name: this.selectedLayout,
         // fit: true,
