@@ -4,17 +4,13 @@
       <p class="display-3">tinet</p>
 
       <v-spacer></v-spacer>
-      <v-btn
-        href="https://github.com/slankdev/tinet/tree/master/examples"
-        target="_blank"
-        text
-      >
+      <v-btn href="https://github.com/slankdev/tinet/tree/master/examples" target="_blank" text>
         <span class="mr-2">tinet config example</span>
         <v-icon>fab fa-github</v-icon>
       </v-btn>
 
       <v-btn href="https://github.com/slankdev/tinet" target="_blank" text>
-        <span class="mr-2">tinet-go</span>
+        <span class="mr-2">tinet</span>
         <v-icon>fab fa-github</v-icon>
       </v-btn>
 
@@ -32,7 +28,7 @@
 
 <script>
 export default {
-  name: 'App',
+  name: "App",
 
   components: {},
 
