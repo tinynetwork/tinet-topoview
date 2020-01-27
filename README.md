@@ -4,30 +4,29 @@ Visualize using [cytoscape.js](https://js.cytoscape.org/) from [tinet](https://g
 
 **[Demo Site](https://tinet-topoview.netlify.com/)**
 
-## Project setup
-
+## Usage
+- docker
 ```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-
-```
-yarn run serve
+docker build -t tinet-topoview .
+docker run -it --rm -p 8080:80 --name tntopoview tinet-topoview
 ```
 
-### Compiles and minifies for production
-
-```
-yarn run build
-```
-
-### Lints and fixes files
-
-```
-yarn run lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- yarn
+  - Project setup
+    ```
+    yarn install
+    ```
+  - Compiles and hot-reloads for development
+    ```
+    yarn run serve
+    ```
+  - Compiles and minifies for production
+    ```
+    yarn run build
+    ```
+  - Lints and fixes files
+    ```
+    yarn run lint
+    ```
+  - Customize configuration
+    - See [Configuration Reference](https://cli.vuejs.org/config/).
