@@ -10,6 +10,7 @@
   "dependencies": {
     "cytoscape": "^3.13.0",
     "cytoscape-cola": "^2.3.0",
+    "cytoscape-edgehandles": "^3.6.0",
     "cytoscape-panzoom": "^2.5.3",
     "js-yaml": "^3.13.1",
     "vue": "^2.6.11",

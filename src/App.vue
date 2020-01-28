@@ -2,9 +2,19 @@
   <v-app>
     <v-app-bar app color="green lighten-3" dark>
       <p class="display-3">tinet</p>
-
       <v-spacer></v-spacer>
-      <v-btn href="https://github.com/slankdev/tinet/tree/master/examples" target="_blank" text>
+
+      <v-tabs fixed-tabs background-color="green lighten-3" dark>
+        <v-tab to="/">Home </v-tab>
+        <v-tab to="/view">View </v-tab>
+        <v-tab to="/edit">[WIP] Edit View </v-tab>
+      </v-tabs>
+      <v-spacer></v-spacer>
+      <v-btn
+        href="https://github.com/slankdev/tinet/tree/master/examples"
+        target="_blank"
+        text
+      >
         <span class="mr-2">tinet config example</span>
         <v-icon>fab fa-github</v-icon>
       </v-btn>
@@ -28,7 +38,7 @@
 
 <script>
 export default {
-  name: "App",
+  name: 'App',
 
   components: {},
 

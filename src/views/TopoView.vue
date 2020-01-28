@@ -48,7 +48,7 @@ cytoscape.use(cola);
 panzoom(cytoscape);
 
 export default {
-  name: "Cytoscape",
+  name: "TopoView",
   components: {},
   created: function() {},
   data: function() {
