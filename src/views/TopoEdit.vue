@@ -4,13 +4,13 @@
       <v-row>
         <v-col cols="6">
           <div id="editoption">
-            <v-dialog v-model="dialog" persistent max-width="600px">
+            <v-dialog v-model="nodedialog" persistent max-width="600px">
               <template v-slot:activator="{ on }">
                 <v-btn class="ma-2" tile outlined color="success" v-on="on">
                   <v-icon left>fas fa-plus</v-icon>Add Node
                 </v-btn>
               </template>
-              <v-card id="addNodeDialog">
+              <v-card id="addDialog">
                 <v-card-title>
                   <span class="headline">Node</span>
                 </v-card-title>
@@ -18,11 +18,7 @@
                   <v-container>
                     <v-row>
                       <v-col cols="12">
-                        <v-text-field
-                          label="Name*"
-                          required
-                          v-model="InputName"
-                        ></v-text-field>
+                        <v-text-field label="Name*" required v-model="nodeInputName"></v-text-field>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -30,28 +26,53 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="dialog = false"
-                    >Close</v-btn
-                  >
+                  <v-btn color="blue darken-1" text @click="nodedialog = false">Close</v-btn>
                   <v-btn
                     color="blue darken-1"
                     text
                     @click="
                       add_node();
-                      dialog = false;
+                      nodedialog = false;
                     "
-                    >addNode</v-btn
-                  >
+                  >addNode</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
-            <v-btn
-              class="ma-2"
-              tile
-              outlined
-              color="blue"
-              v-on:click="saveConfig"
-            >
+            <v-dialog v-model="swdialog" persistent max-width="600px">
+              <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" tile outlined color="success" v-on="on">
+                  <v-icon left>fas fa-plus</v-icon>Add Switch
+                </v-btn>
+              </template>
+              <v-card id="addDialog">
+                <v-card-title>
+                  <span class="headline">Switch</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-text-field label="Name*" required v-model="swInputName"></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <small>*indicates required field</small>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="swdialog = false">Close</v-btn>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="
+                      add_switch();
+                      swdialog = false;
+                    "
+                  >addSwitch</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-btn class="ma-2" tile outlined color="blue" v-on:click="saveConfig">
               <v-icon left>fas fa-edit</v-icon>Write Config
             </v-btn>
             <v-btn class="ma-2" tile outlined color="red" v-on:click="Init">
@@ -75,74 +96,103 @@
 </template>
 
 <script>
-const cytoscape = require('cytoscape');
-const cola = require('cytoscape-cola');
-const edgehandles = require('cytoscape-edgehandles');
-const yaml = require('js-yaml');
+const cytoscape = require("cytoscape");
+const cola = require("cytoscape-cola");
+const edgehandles = require("cytoscape-edgehandles");
+const yaml = require("js-yaml");
 
 cytoscape.use(cola);
 cytoscape.use(edgehandles);
 
 export default {
-  name: 'TopoEdit',
+  name: "TopoEdit",
   components: {},
   created: function() {},
   data: function() {
     return {
-      dialog: false,
-      InputName: '',
-      tinetConfig: ''
+      nodedialog: false,
+      swdialog: false,
+      nodeInputName: "",
+      swInputName: "",
+      tinetConfig: ""
     };
   },
   methods: {
     add_node: function() {
       this.cy.add([
         {
-          group: 'nodes',
-          data: { id: this.InputName, name: this.InputName },
+          group: "nodes",
+          data: {
+            id: this.nodeInputName,
+            name: this.nodeInputName,
+            type: "node"
+          },
           position: { x: 300, y: 200 }
+        }
+      ]);
+    },
+    add_switch: function() {
+      this.cy.add([
+        {
+          group: "nodes",
+          data: {
+            id: this.swInputName,
+            name: this.swInputName,
+            type: "switch"
+          },
+          position: { x: 400, y: 300 }
         }
       ]);
     },
     view_init: function() {
       this.cy = cytoscape({
-        container: document.getElementById('cy'),
+        container: document.getElementById("cy"),
         boxSelectionEnabled: false,
         autounselectify: true,
         style: cytoscape
           .stylesheet()
-          .selector('node')
+          .selector('node[type = "node"]')
           .css({
             height: 80,
             width: 80,
-            'background-fit': 'cover',
-            'border-color': '#000',
-            'border-width': 3,
-            'border-opacity': 0.5,
-            content: 'data(name)',
-            'text-valign': 'center'
+            "background-fit": "cover",
+            "border-color": "#000",
+            "border-width": 3,
+            "border-opacity": 0.5,
+            content: "data(name)",
+            "text-valign": "center"
           })
-          .selector('edge')
+          .selector('node[type = "switch"]')
+          .css({
+            height: 80,
+            width: 80,
+            shape: "square",
+            "background-fit": "cover",
+            "border-color": "red",
+            "border-width": 3,
+            "border-opacity": 0.5,
+            content: "data(name)",
+            "text-valign": "center"
+          })
+          .selector("edge")
           .css({
             width: 6,
-            'target-arrow-shape': 'none',
-            'line-color': '#ffaaaa',
-            'target-arrow-color': '#ffaaaa',
-            'curve-style': 'bezier'
+            "target-arrow-shape": "none",
+            "line-color": "#ffaaaa",
+            "target-arrow-color": "#ffaaaa",
+            "curve-style": "bezier"
           }),
         elements: {
           nodes: [],
           edges: []
         },
         layout: {
-          name: 'cola',
+          name: "cola",
           directed: true,
           padding: 10
         }
       });
       this.cy.edgehandles();
-      // this.cy.edgeEditing({ undoable: true, bendRemovalSensitivity: 16 });
-      // this.cy.style().update();
     },
     saveConfig: function() {
       const cytoscapeJson = this.cy.json();
@@ -151,115 +201,65 @@ export default {
     },
     cytoscape2tnconf: function(nodeJson) {
       const nodeMap = {};
-      for (let i = 0; i < nodeJson.nodes.length; i++) {
-        let nodeName = nodeJson.nodes[i].data.name;
-        let node = {};
-        node['name'] = nodeName;
-        nodeMap[nodeName] = true;
-      }
-
-      const nodeEdges = {};
-      for (let j = 0; j < nodeJson.edges.length; j++) {
-        const sourceNode = nodeJson.edges[j].data.source;
-        const targetNode = nodeJson.edges[j].data.target;
-        console.log('nodeEdges');
-        console.log(nodeEdges[sourceNode]);
-        if (nodeEdges[sourceNode] === undefined) {
-          nodeEdges[sourceNode] = [{ num: j, node: targetNode }];
-        } else {
-          nodeEdges[sourceNode].push({ num: j, node: targetNode });
-        }
-
-        if (nodeEdges[targetNode] === undefined) {
-          nodeEdges[targetNode] = [{ num: j, node: sourceNode }];
-        } else {
-          nodeEdges[targetNode].push({ num: j, node: sourceNode });
-        }
-        console.log('waiwai' + String(j));
-        console.log(nodeEdges[sourceNode]);
-        console.log(nodeEdges[targetNode]);
-      }
-
-      const nodeEdgesKey = Object.keys(nodeEdges);
-
-      const nodes = {};
-      nodes['nodes'] = [];
-
-      const nodeConf = {};
-
-      nodeEdgesKey.forEach(nodeEdge => {
-        console.log(nodeEdges[nodeEdge]);
-        for (let k = 0; k < nodeEdges[nodeEdge].length; k++) {
-          const infNum = nodeEdges[nodeEdge][k].num;
-          const tgtNode = nodeEdges[nodeEdge][k].node;
-          const link = {
-            node: nodeEdge,
-            interfaces: {
-              name: 'net' + infNum,
-              type: 'direct',
-              target: tgtNode
-            }
-          };
-          if (nodeConf[link['node']] === undefined) {
-            nodeConf[link['node']] = [link];
-          } else {
-            nodeConf[link['node']].push(link);
-          }
-
-          nodes['nodes'].push(link);
-        }
-      });
-
-      for (const key in nodeConf) {
-        nodeConf[key].forEach(node => {
-          console.log(node['node']);
-          console.log(node['interfaces']);
-          const tgtNode = node['interfaces']['target'];
-          nodeConf[tgtNode].forEach(target => {
-            console.log('target: ' + target['node'], target['interfaces']);
-            if (target['interfaces']['target'] === node['node']) {
-              const args = target['node'] + '#' + target['interfaces']['name'];
-              const targetArgs =
-                node['node'] + '#' + node['interfaces']['name'];
-              console.log('args: ', args);
-              node['interfaces']['args'] = args;
-              target['interfaces']['args'] = targetArgs;
-            }
-          });
-          delete node['interfaces']['target'];
-          console.log('node: ' + node);
-        });
-      }
-
-      const nodesMap = {};
-      for (let key in nodes['nodes']) {
-        console.log('key: ' + key + ', value: ' + nodes['nodes'][key]['node']);
-        if (nodesMap[nodes['nodes'][key]['node']] === undefined) {
-          nodesMap[nodes['nodes'][key]['node']] = [
-            nodes['nodes'][key]['interfaces']
+      console.log(nodeJson);
+      console.log(nodeJson.edges);
+      for (let i = 0; i < nodeJson.edges.length; i++) {
+        if (nodeMap[nodeJson.edges[i].data.source] == undefined) {
+          nodeMap[nodeJson.edges[i].data.source] = [
+            nodeJson.edges[i].data.target + "#" + "net" + i
           ];
         } else {
-          nodesMap[nodes['nodes'][key]['node']].push(
-            nodes['nodes'][key]['interfaces']
+          nodeMap[nodeJson.edges[i].data.source].push(
+            nodeJson.edges[i].data.target + "#" + "net" + i
+          );
+        }
+
+        if (nodeMap[nodeJson.edges[i].data.target] == undefined) {
+          nodeMap[nodeJson.edges[i].data.target] = [
+            nodeJson.edges[i].data.source + "#" + "net" + i
+          ];
+        } else {
+          nodeMap[nodeJson.edges[i].data.target].push(
+            nodeJson.edges[i].data.source + "#" + "net" + i
           );
         }
       }
 
-      const nodeSettings = [];
-      for (const nodeKey in nodesMap) {
-        const setting = {
-          name: nodeKey,
-          image: '',
-          interfaces: nodesMap[nodeKey]
-        };
-        nodeSettings.push(setting);
+      const keys = Object.keys(nodeMap);
+      const keysLength = keys.length;
+      let confMap = {};
+      let infMaps = {};
+      for (let j = 0; j < keysLength; j++) {
+        let key = keys[j];
+        let val = nodeMap[key];
+        console.log("nodemap for");
+        console.log("key ", key);
+        console.log("val ", val);
+        confMap["interfaces"] = [];
+        for (let k = 0; k < val.length; k++) {
+          let inf = { name: "net" + k, type: "direct", args: val[k] };
+          confMap["interfaces"].push(inf);
+        }
+        infMaps[key] = confMap["interfaces"];
       }
-      this.tinetConfig = yaml.safeDump(nodeSettings, {
+      console.log(infMaps);
+
+      let confs = [];
+      keys.forEach(key => {
+        confMap = {};
+        confMap["name"] = key;
+        confMap["image"] = "slankdev/frr";
+        confMap["interfaces"] = infMaps[key];
+        confs.push(confMap);
+      });
+      console.log(confs);
+
+      this.tinetConfig = yaml.safeDump(confs, {
         indent: 4
       });
     },
     Init: function() {
-      this.tinetConfig = '';
+      this.tinetConfig = "";
       this.view_init();
     }
   },
@@ -281,7 +281,7 @@ export default {
   background-color: #e9e9e9;
 }
 
-#addNodeDialog {
+#addDialog {
   position: absolute;
   top: 100px;
   width: 40%;
