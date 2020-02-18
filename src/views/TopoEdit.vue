@@ -56,7 +56,7 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <small>*indicates required field</small>
+                  <small>*Be sure to enter a name that includes SW (uppercase)</small>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
