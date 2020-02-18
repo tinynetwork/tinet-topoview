@@ -5,26 +5,17 @@
       <v-spacer></v-spacer>
 
       <v-tabs fixed-tabs background-color="green lighten-3" dark>
-        <v-tab to="/">Home </v-tab>
-        <v-tab to="/view">View </v-tab>
-        <v-tab to="/edit">[WIP] Edit View </v-tab>
+        <v-tab to="/">Home</v-tab>
+        <v-tab to="/view">View</v-tab>
+        <v-tab to="/edit">Draw</v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
-      <v-btn
-        href="https://github.com/slankdev/tinet/tree/master/examples"
-        target="_blank"
-        text
-      >
+      <v-btn href="https://github.com/tinynetwork/tinet/tree/master/examples" target="_blank" text>
         <span class="mr-2">tinet config example</span>
         <v-icon>fab fa-github</v-icon>
       </v-btn>
 
-      <v-btn href="https://github.com/slankdev/tinet" target="_blank" text>
-        <span class="mr-2">tinet</span>
-        <v-icon>fab fa-github</v-icon>
-      </v-btn>
-
-      <v-btn href="https://github.com/ak1ra24/tinet-go" target="_blank" text>
+      <v-btn href="https://github.com/tinynetwork/tinet" target="_blank" text>
         <span class="mr-2">tinet-go</span>
         <v-icon>fab fa-github</v-icon>
       </v-btn>
@@ -38,7 +29,7 @@
 
 <script>
 export default {
-  name: 'App',
+  name: "App",
 
   components: {},
 

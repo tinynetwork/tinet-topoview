@@ -113,7 +113,7 @@ export default {
       nodedialog: false,
       swdialog: false,
       nodeInputName: "",
-      swInputName: "",
+      swInputName: "SW",
       tinetConfig: ""
     };
   },
@@ -156,11 +156,12 @@ export default {
             height: 80,
             width: 80,
             "background-fit": "cover",
-            "border-color": "#000",
+            "border-color": "#000080",
             "border-width": 3,
             "border-opacity": 0.5,
             content: "data(name)",
-            "text-valign": "center"
+            "text-valign": "center",
+            color: "#000"
           })
           .selector('node[type = "switch"]')
           .css({
@@ -168,17 +169,18 @@ export default {
             width: 80,
             shape: "square",
             "background-fit": "cover",
-            "border-color": "red",
+            "border-color": "#000",
             "border-width": 3,
             "border-opacity": 0.5,
             content: "data(name)",
-            "text-valign": "center"
+            "text-valign": "center",
+            color: "#000"
           })
           .selector("edge")
           .css({
             width: 6,
             "target-arrow-shape": "none",
-            "line-color": "#ffaaaa",
+            "line-color": "#000",
             "target-arrow-color": "#ffaaaa",
             "curve-style": "bezier"
           }),
@@ -201,60 +203,113 @@ export default {
     },
     cytoscape2tnconf: function(nodeJson) {
       const nodeMap = {};
-      console.log(nodeJson);
-      console.log(nodeJson.edges);
-      for (let i = 0; i < nodeJson.edges.length; i++) {
-        if (nodeMap[nodeJson.edges[i].data.source] == undefined) {
+      nodeJson.nodes.forEach(node => {
+        let type = node.data.type;
+        nodeJson.edges.forEach(edge => {
+          edge.data["type"] = type;
+        });
+      });
+
+      for (let i = 0; i < Object.keys(nodeJson.edges).length; i++) {
+        if (nodeMap[nodeJson.edges[i].data.source] === undefined) {
           nodeMap[nodeJson.edges[i].data.source] = [
-            nodeJson.edges[i].data.target + "#" + "net" + i
+            nodeJson.edges[i].data.target
           ];
         } else {
           nodeMap[nodeJson.edges[i].data.source].push(
-            nodeJson.edges[i].data.target + "#" + "net" + i
+            nodeJson.edges[i].data.target
           );
         }
 
-        if (nodeMap[nodeJson.edges[i].data.target] == undefined) {
+        if (nodeMap[nodeJson.edges[i].data.target] === undefined) {
           nodeMap[nodeJson.edges[i].data.target] = [
-            nodeJson.edges[i].data.source + "#" + "net" + i
+            nodeJson.edges[i].data.source
           ];
         } else {
           nodeMap[nodeJson.edges[i].data.target].push(
-            nodeJson.edges[i].data.source + "#" + "net" + i
+            nodeJson.edges[i].data.source
           );
         }
       }
 
-      const keys = Object.keys(nodeMap);
-      const keysLength = keys.length;
-      let confMap = {};
-      let infMaps = {};
-      for (let j = 0; j < keysLength; j++) {
-        let key = keys[j];
-        let val = nodeMap[key];
-        console.log("nodemap for");
-        console.log("key ", key);
-        console.log("val ", val);
-        confMap["interfaces"] = [];
-        for (let k = 0; k < val.length; k++) {
-          let inf = { name: "net" + k, type: "direct", args: val[k] };
-          confMap["interfaces"].push(inf);
+      let infConf = {};
+      let nodes = {};
+      nodes["nodes"] = [];
+      nodes["switches"] = [];
+
+      nodeJson.nodes.forEach(nodeinfo => {
+        let nodeName = nodeinfo.data.name;
+        let num = 0;
+        if (nodeMap[nodeName]) {
+          nodeMap[nodeName].forEach(node => {
+            if (node.indexOf("SW") != -1) {
+              if (infConf[nodeName] === undefined) {
+                infConf[nodeName] = [
+                  {
+                    name: "net" + num,
+                    type: "bridge",
+                    args: node
+                  }
+                ];
+              } else {
+                infConf[nodeName].push({
+                  name: "net" + num,
+                  type: "bridge",
+                  args: node
+                });
+              }
+            } else if (nodeName.indexOf("SW") != -1) {
+              if (infConf[nodeName] === undefined) {
+                infConf[nodeName] = [
+                  {
+                    name: "net" + nodeMap[node].indexOf(nodeName),
+                    type: "docker",
+                    args: node
+                  }
+                ];
+              } else {
+                infConf[nodeName].push({
+                  name: "net" + nodeMap[node].indexOf(nodeName),
+                  type: "docker",
+                  args: node
+                });
+              }
+            } else {
+              if (infConf[nodeName] === undefined) {
+                infConf[nodeName] = [
+                  {
+                    name: "net" + num,
+                    type: "direct",
+                    args: node + "#net" + nodeMap[node].indexOf(nodeName)
+                  }
+                ];
+              } else {
+                infConf[nodeName].push({
+                  name: "net" + num,
+                  type: "direct",
+                  args: node + "#net" + nodeMap[node].indexOf(nodeName)
+                });
+              }
+            }
+            num += 1;
+          });
+
+          if (nodeName.indexOf("SW") != -1) {
+            nodes["switches"].push({
+              name: nodeName,
+              interfaces: infConf[nodeName]
+            });
+          } else {
+            nodes["nodes"].push({
+              name: nodeName,
+              image: "slankdev/frr",
+              interfaces: infConf[nodeName]
+            });
+          }
         }
-        infMaps[key] = confMap["interfaces"];
-      }
-      console.log(infMaps);
-
-      let confs = [];
-      keys.forEach(key => {
-        confMap = {};
-        confMap["name"] = key;
-        confMap["image"] = "slankdev/frr";
-        confMap["interfaces"] = infMaps[key];
-        confs.push(confMap);
       });
-      console.log(confs);
 
-      this.tinetConfig = yaml.safeDump(confs, {
+      this.tinetConfig = yaml.safeDump(nodes, {
         indent: 4
       });
     },
